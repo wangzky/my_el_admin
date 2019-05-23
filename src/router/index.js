@@ -30,20 +30,17 @@ export const constantRouterMap = [
       {
         path: 'home',
         component: () => import('@/views/index/model/home'),
-        name: 'home',
-        hidden: true,
-        meta: { title: '首页', icon: 'index', noCache: true, affix: true }
+        hidden: true
       },
       {
         path: 'blogs',
         component: () => import('@/views/index/model/blogs'),
-        name: 'blogs',
-        hidden: true,
-        meta: { title: '首页', icon: 'index', noCache: true, affix: true }
+        hidden: true
       }
     ]
   },
-  { path: '/login',
+  {
+    path: '/login',
     meta: { title: '登录', noCache: true },
     component: () => import('@/views/login/index'),
     hidden: true

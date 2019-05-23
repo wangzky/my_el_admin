@@ -1,12 +1,10 @@
 <template>
   <div>
-    <div style="float: left">
-      <div ref="editor" style="text-align:left;margin: 5px"/>
-    </div>
-    <div style="float: right;margin-left: 10px">
-      <div style="margin: 12px 5px;font-size: 16px;font-weight: bold;color: #696969">实时预览：</div>
+    <div ref="editor" style="text-align:left;width: 100%;"/>
+    <el-button type="text" @click="dialogTableVisible = true">预览</el-button>
+    <el-dialog :visible.sync="dialogTableVisible" title="预览" append-to-body>
       <div class="editor-content" v-html="editorContent"/>
-    </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -18,10 +16,15 @@ import { getToken } from '@/utils/auth'
 export default {
   data() {
     return {
+      editor: null,
       headers: {
         'Authorization': 'Bearer ' + getToken()
       },
-      editorContent: ''
+      editorContent: '',
+      dialogTableVisible: false,
+      clearFlag: false,
+      value: '',
+      editFlag: '0'
     }
   },
   computed: {
@@ -29,18 +32,36 @@ export default {
       'imagesUploadApi'
     ])
   },
+  watch: {
+    value: function(val) {
+      console.log(val)
+    }
+  },
   mounted() {
-    var editor = new E(this.$refs.editor)
-    editor.customConfig.uploadImgShowBase64 = true // 使用 base64 保存图片
+    this.editor = new E(this.$refs.editor)
+    this.editor.customConfig.uploadImgShowBase64 = true // 使用 base64 保存图片
     // 不可修改
-    editor.customConfig.uploadImgHeaders = this.headers
+    this.editor.customConfig.uploadImgHeaders = this.headers
     // 自定义文件名，不可修改，修改后会上传失败
-    editor.customConfig.uploadFileName = 'file'
-    editor.customConfig.uploadImgServer = this.imagesUploadApi // 上传图片到服务器
-    editor.customConfig.onchange = (html) => {
+    this.editor.customConfig.uploadFileName = 'file'
+    // editor.customConfig.uploadImgServer = this.imagesUploadApi // 上传图片到服务器
+    this.editor.customConfig.onchange = (html) => {
       this.editorContent = html
     }
-    editor.create()
+    this.editor.create()
+    this.editor.txt.html()
+  },
+  methods: {
+    getEditorInfo() {
+      this.$emit('listenEditInfo', this.editorContent)
+    },
+    destroy() {
+      this.editor.txt.html('<p><br></p>')
+    },
+    initializationData(val) {
+      this.editorContent = val
+      this.editor.txt.html(val)
+    }
   }
 }
 </script>

@@ -37,15 +37,15 @@
       <eForm ref="form" :sup_this="sup_this" :is-add="true" :dicts="dicts"/>
     </div>
     <!-- 导出 -->
-    <el-button
-      v-if="checkPermission(['ADMIN'])"
-      :loading="downloadLoading"
-      size="mini"
-      class="filter-item"
-      type="primary"
-      icon="el-icon-download"
-      @click="download">导出
-    </el-button>
+    <!--<el-button-->
+    <!--v-if="checkPermission(['ADMIN'])"-->
+    <!--:loading="downloadLoading"-->
+    <!--size="mini"-->
+    <!--class="filter-item"-->
+    <!--type="primary"-->
+    <!--icon="el-icon-download"-->
+    <!--@click="download">导出-->
+    <!--</el-button>-->
   </div>
 </template>
 
@@ -61,12 +61,7 @@ export default {
   props: {
     query: {
       type: Object,
-      required: true,
-      q_type: '',
-      subject_type_main: Object,
-      subject_type: Object,
-      class_grade: Object,
-      class_degree: Object
+      required: true
     },
     sup_this: {
       type: Object,
@@ -84,7 +79,13 @@ export default {
       subject_type_mains: [],
       subject_types: [],
       class_grades: [],
-      class_degrees: []
+      class_degrees: [],
+      value: '',
+      q_type: '',
+      subject_type_main: '',
+      subject_type: '',
+      class_grade: '',
+      class_degree: ''
     }
   },
   created() {
@@ -93,7 +94,6 @@ export default {
   methods: {
     checkPermission,
     add() {
-      this.$refs.form.getStuGrades()
       this.$refs.form.dialog = true
     },
     // 去查询

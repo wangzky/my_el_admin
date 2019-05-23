@@ -28,23 +28,24 @@ export default {
     to() {
       const _this = this.$refs.form
       _this.form = {
-        age: this.data.age,
-        stuGrade: this.data.stuGrade,
-        stuClass: this.data.stuClass,
-        school: this.data.school,
-        campus: this.data.campus,
-        remark: this.data.remark,
+        q_type: this.data.q_type,
+        subject_type_main: this.data.subject_type_main,
+        subject_type: this.data.subject_type,
+        class_grade: this.data.class_grade,
+        class_degree: this.data.class_degree,
+        q_title: this.data.q_title,
         id: this.data.id,
-        name: this.data.name,
-        phone: this.data.phone
+        item_id: this.data.item_id,
+        q_info: this.data.q_info,
+        a_info: this.data.a_info
       }
-      _this.getStuGrades()
-      if (this.data.stuGrade !== null && this.data.stuGrade !== '') {
-        _this.getStuClasss(this.data.stuGrade)
+      _this.value = {
+        q_info: this.data.q_info,
+        a_info: this.data.a_info
       }
-      // _this.stuGrade = this.data.stuGrade
-      // _this.stuClass = this.data.stuClass
       _this.dialog = true
+      _this.editFlag = true
+      // _this.initData()
     }
   }
 }

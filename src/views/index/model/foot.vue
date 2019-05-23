@@ -1,6 +1,7 @@
 <template>
   <div class="page-foot">
     <h1>Welcome to <a href="http://www.wangzk.cn">wangzk.cn</a></h1>
+    <h3>备案号：<a href="http://www.miibeian.gov.cn/">京ICP备19021313号</a></h3>
   </div>
 </template>
 
@@ -13,7 +14,7 @@ export default {
 <style scoped>
 
   .page-foot {
-    position: absolute;
+    /*position: absolute;*/
     bottom: 0px;
     width: 99%;
     height: auto;
@@ -22,7 +23,7 @@ export default {
     z-index: 2;
     overflow: hidden;
     font-size: .7rem;
-    font-family: "宋体";
+    font-family: "黑体";
     margin: 0 auto;
     padding-top: .9rem;
   }

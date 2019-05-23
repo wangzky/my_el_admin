@@ -1,19 +1,34 @@
 <template>
   <div class="carouselClass">
     <!--轮播-->
-    <div style="margin-top: 10px;">
-      <el-carousel :autoplay="false" height="400px" direction="vertical">
-        <el-carousel-item v-for="item in 3" :key="item">
-          <h3 class="medium">{{ item }}</h3>
+    <div style="margin-top: 0px;z-index:1">
+      <el-carousel :autoplay="false" height="800px" direction="vertical">
+        <el-carousel-item v-for="item in picList" :key="item">
+          <img :src="item.url" class="imgClass">
         </el-carousel-item>
       </el-carousel>
     </div>
+    <foot/>
   </div>
 </template>
 
 <script>
+import foot from './foot'
+
 export default {
-  name: 'Home'
+  name: 'Home',
+  components: { foot },
+  data() {
+    return {
+      picList: [
+        { url: 'https://i.loli.net/2019/05/20/5ce2613ce25a323201.jpg' },
+        { url: 'https://i.loli.net/2019/05/20/5ce2613ce25a323201.jpg' },
+        { url: 'https://i.loli.net/2019/05/20/5ce2613ce25a323201.jpg' },
+        { url: 'https://i.loli.net/2019/05/20/5ce2613ce25a323201.jpg' },
+        { url: 'https://i.loli.net/2019/05/20/5ce2613ce25a323201.jpg' }
+      ]
+    }
+  }
 }
 </script>
 
@@ -37,5 +52,11 @@ export default {
   .carouselClass {
     z-index: 99999;
     top: 0px;
+  }
+
+  .imgClass {
+    width: 100%;
+    height: 100%;
+    display: block;
   }
 </style>

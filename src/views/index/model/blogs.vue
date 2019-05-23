@@ -16,14 +16,10 @@
       <el-col :span="16">
         <div style="width: 70%;margin:0 auto;text-align:left">
           <div class="block">
-            <el-timeline>
-              <el-timeline-item v-for="(item, key) in blogs" :key="key" :timestamp="item.timestamp" placement="top">
-                <el-card>
-                  <h4>{{ item.title }}</h4>
-                  <p>{{ item.foreword }}</p>
-                </el-card>
-              </el-timeline-item>
-            </el-timeline>
+            <timeline v-for="(item, key) in blogs" :key="key">
+              <timeline-title>{{ item.timestamp }} - {{ item.title }}</timeline-title>
+              <timeline-item bg-color="#9dd8e0">{{ item.foreword }}</timeline-item>
+            </timeline>
           </div>
         </div>
       </el-col>
@@ -33,8 +29,15 @@
 </template>
 
 <script>
+import { Timeline, TimelineItem, TimelineTitle } from 'vue-cute-timeline'
+
 export default {
   name: 'Blogs',
+  components: {
+    Timeline,
+    TimelineItem,
+    TimelineTitle
+  },
   data() {
     return {
       blogs: [
@@ -54,9 +57,9 @@ export default {
           foreword: '王小虎 提交于 2018/4/12 20:46'
         },
         {
-          'timestamp': '2018/4/12',
-          'title': '更新 Github 模板',
-          'foreword': '王小虎 提交于 2018/4/12 20:46'
+          timestamp: '2018/4/12',
+          title: '更新 Github 模板',
+          foreword: '王小虎 提交于 2018/4/12 20:46'
         }
       ],
       cards: [

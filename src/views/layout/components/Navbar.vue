@@ -5,9 +5,6 @@
 
     <div class="right-menu">
       <template v-if="device!=='mobile'">
-        <el-tooltip content="更新公告" effect="dark" placement="bottom">
-          <Placard class="screenfull right-menu-item"/>
-        </el-tooltip>
         <el-tooltip content="全屏" effect="dark" placement="bottom">
           <screenfull class="screenfull right-menu-item"/>
         </el-tooltip>
@@ -18,16 +15,11 @@
           <i class="el-icon-caret-bottom"/>
         </div>
         <el-dropdown-menu slot="dropdown">
-          <a target="_blank" href="https://docs.auauz.net/">
-            <el-dropdown-item>
-              项目文档
-            </el-dropdown-item>
-          </a>
-          <span style="display:block;" @click="show = true">
-            <el-dropdown-item>
-              布局设置
-            </el-dropdown-item>
-          </span>
+          <!--<span style="display:block;" @click="show = true">-->
+          <!--<el-dropdown-item>-->
+          <!--布局设置-->
+          <!--</el-dropdown-item>-->
+          <!--</span>-->
           <router-link to="/user/center">
             <el-dropdown-item>
               个人中心
@@ -98,7 +90,7 @@ export default {
       float: left;
       padding: 0 10px;
     }
-    .breadcrumb-container{
+    .breadcrumb-container {
       float: left;
     }
     .errLog-container {
@@ -108,7 +100,7 @@ export default {
     .right-menu {
       float: right;
       height: 100%;
-      &:focus{
+      &:focus {
         outline: none;
       }
       .right-menu-item {
@@ -118,7 +110,7 @@ export default {
       .screenfull {
         height: 20px;
       }
-      .international{
+      .international {
         vertical-align: top;
       }
       .theme-switch {

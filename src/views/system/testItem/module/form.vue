@@ -1,13 +1,18 @@
 <template>
-  <el-dialog :visible.sync="dialog" :title="isAdd ? '新增试题' : '编辑试题'" append-to-body width="70%">
-    <el-form ref="form" :inline="true" :model="form" :rules="rules" size="small" label-width="100px">
+  <el-dialog :visible.sync="dialog" :title="isAdd ? '新增试题' : '编辑试题'" append-to-body width="70%" top="10px">
+    <el-form ref="form" :inline="true" :model="form" size="small" label-width="100px">
       <el-form-item label="题型">
         <el-select v-model="form.q_type" clearable placeholder="题型" class="filter-item" style="width: 130px">
           <el-option v-for="item in q_types" :key="item.value" :label="item.label" :value="item.value"/>
         </el-select>
       </el-form-item>
       <el-form-item label="学科大类">
-        <el-select v-model="form.subject_type_main" clearable placeholder="学科大类" class="filter-item" style="width: 130px">
+        <el-select
+          v-model="form.subject_type_main"
+          clearable
+          placeholder="学科大类"
+          class="filter-item"
+          style="width: 130px">
           <el-option v-for="item in subject_type_mains" :key="item.id" :label="item.label" :value="item.value"/>
         </el-select>
       </el-form-item>
@@ -27,22 +32,22 @@
         </el-select>
       </el-form-item>
       <div>
-        <el-form-item label="习题标题" prop="name">
-          <el-input v-model="form.q_title" style="width: 160px;"/>
+        <el-form-item label="习题标题" prop="q_title">
+          <el-input v-model="form.q_title" style="width: 260px;"/>
         </el-form-item>
       </div>
       <div>
-        <el-form-item label="习题内容" prop="name">
-          <Editor/>
+        <el-form-item label="习题内容" prop="q_info">
+          <Editor ref="qEditor" v-model="form.q_info" @listenEditInfo="editInfo('q_info',$event)"/>
         </el-form-item>
       </div>
       <div>
-        <el-form-item label="习题答案" prop="name">
-          <Editor/>
+        <el-form-item label="习题答案" prop="a_info">
+          <Editor ref="aEditor" v-model="form.a_info" @listenEditInfo="editInfo('a_info',$event)"/>
         </el-form-item>
       </div>
-      <el-form-item label="备注" prop="name">
-        <el-texteare v-model="form.remark" style="width: 160px;"/>
+      <el-form-item label="备注" prop="remark">
+        <el-input v-model="form.remark" type="textarea" style="width: 250%;"/>
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer" align="center">
@@ -54,11 +59,11 @@
 
 <script>
 
-import { add, edit } from '@/api/stu'
-import { getStuClasssById } from '@/api/stuClass'
+import { add, edit } from '@/api/testItem'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import Editor from './editor'
+import { get } from '@/api/dictDetail'
 
 export default {
   components: { Treeselect, Editor },
@@ -77,44 +82,53 @@ export default {
     }
   },
   data() {
-    const validPhone = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('请输入电话号码'))
-      } else if (!this.isvalidPhone(value)) {
-        callback(new Error('请输入正确的11位手机号码'))
-      } else {
-        callback()
-      }
-    }
     return {
       dialog: false,
       loading: false,
-      stuGrade: '',
+      q_info: '',
       stuClass: '',
       form: {
-        name: '',
-        age: '',
-        phone: '',
-        stuGrade: '',
-        stuClass: '',
-        school: '',
-        campus: '',
+        id: '',
+        item_id: '',
+        q_type: '',
+        subject_type_main: '',
+        subject_type: '',
+        class_grade: '',
+        class_degree: '',
+        q_title: '',
+        q_info: '',
+        a_info: '',
         remark: ''
       },
-      roleIds: [],
-      roles: [],
-      stuGrades: [],
-      stuClasss: [],
       style: 'width: 184px',
-      rules: {
-        name: [
-          { required: true, message: '请输入姓名', trigger: 'blur' },
-          { min: 2, max: 20, message: '长度在 2 到 20 个字符', trigger: 'blur' }
-        ],
-        phone: [
-          { required: true, trigger: 'blur', validator: validPhone }
-        ]
-      }
+      editorInfo: '',
+      editList: [
+        {
+          title: '习题内容',
+          var: 'q_info'
+        },
+        {
+          title: '习题答案',
+          var: 'a_info'
+        }
+      ],
+      q_types: [],
+      subject_type_mains: [],
+      subject_types: [],
+      class_grades: [],
+      class_degrees: [],
+      value: {
+        q_info: '',
+        a_info: ''
+      },
+      editFlag: false
+    }
+  },
+  watch: {
+    editFlag: function() {
+      this.$nextTick(function() {
+        this.initData()
+      })
     }
   },
   created() {
@@ -124,14 +138,17 @@ export default {
     } else {
       this.style = 'width: 172px'
     }
+    this.qrySelectOption()
   },
   methods: {
     cancel() {
       this.resetForm()
+      this.destroyEditor()
     },
     doSubmit() {
-      this.form.stuGrade = this.stuGrade
-      this.form.stuClass = this.stuClass
+      this.$refs.qEditor.getEditorInfo()
+      this.$refs.aEditor.getEditorInfo()
+
       this.$refs['form'].validate((valid) => {
         if (valid) {
           this.loading = true
@@ -148,6 +165,7 @@ export default {
     doAdd() {
       add(this.form).then(res => {
         this.resetForm()
+        this.destroyEditor()
         this.$notify({
           title: '添加成功',
           type: 'success',
@@ -163,6 +181,7 @@ export default {
     doEdit() {
       edit(this.form).then(res => {
         this.resetForm()
+        this.destroyEditor()
         this.$notify({
           title: '修改成功',
           type: 'success',
@@ -179,45 +198,66 @@ export default {
       this.dialog = false
       this.$refs['form'].resetFields()
       this.form = {
-        name: '',
-        age: '',
-        phone: '',
-        stuGrade: '',
-        stuClass: '',
-        school: '',
-        campus: '',
+        q_type: '',
+        subject_type_main: '',
+        subject_type: '',
+        class_grade: '',
+        class_degree: '',
+        q_title: '',
+        q_info: '',
+        a_info: '',
         remark: ''
       }
     },
-    getStuClasss(id) {
-      getStuClasssById(id).then(res => {
-        this.stuClasss = res.content
-        if (this.form.stuClass !== '') {
-          this.stuClass = parseInt(this.form.stuClass)
-        } else {
-          this.stuClass = this.stuClasss[0].id
-        }
-      }).catch(err => {
-        console.log(err.response.data.message)
-      })
-    },
-    getStuGrades() {
-      getStuClasssById(1).then(res => {
-        this.stuGrades = res.content
-        if (this.form.stuGrade !== '') {
-          this.stuGrade = parseInt(this.form.stuGrade)
-        }
-      })
-    },
-    isvalidPhone(str) {
-      const reg = /^1[3|4|5|6|7|8|9][0-9]\d{8}$/
-      return reg.test(str)
-    },
-    selectFun(node, instanceId) {
-      this.getStuClasss(node)
-    },
     change() {
       this.$forceUpdate()
+    },
+    editInfo(a, info) {
+      if (a === 'q_info') {
+        this.form.q_info = info
+      } else if (a === 'a_info') {
+        this.form.a_info = info
+      } else {
+        console.error('传值有误！')
+      }
+    },
+    qrySelectOption() {
+      this.getOption('q_type')
+      this.getOption('subject_type_main')
+      this.getOption('subject_type')
+      this.getOption('class_grade')
+      this.getOption('class_degree')
+    },
+    getOption(name) {
+      get(name).then(res => {
+        var content = res.content
+        switch (name) {
+          case 'q_type':
+            this.q_types = content
+            break
+          case 'subject_type_main':
+            this.subject_type_mains = content
+            break
+          case 'subject_type':
+            this.subject_types = content
+            break
+          case 'class_grade':
+            this.class_grades = content
+            break
+          case 'class_degree':
+            this.class_degrees = content
+            break
+        }
+      })
+    },
+    destroyEditor() {
+      this.$refs.qEditor.destroy()
+      this.$refs.aEditor.destroy()
+      this.resetForm()
+    },
+    initData() {
+      this.$refs.aEditor.initializationData(this.value.a_info)
+      this.$refs.qEditor.initializationData(this.value.q_info)
     }
   }
 }
